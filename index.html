@@ -1,0 +1,3469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Assistant SLP</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #4070f4;
+        }
+
+        .container {
+            gap: 2px;
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            border-radius: 10px;
+            padding: 50px;
+            background-color: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container > div {
+            display: none;
+        }
+
+        .container > div.active {
+            display: block;
+        }
+
+        .container header {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .input-field {
+            flex: 0 0 calc(33.333% - 20px);
+            margin-bottom: 20px;
+        }
+
+        .input-field label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        .nextBtn,
+        .backBtn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin-right: 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nextBtn:hover,
+        .backBtn:hover {
+            background-color: #265df2;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #265df2;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-upload-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            background-color: #4070f4;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .custom-upload-btn:hover {
+            background-color: #265df2;
+        }
+
+        .styled-dropdown {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        .small-input {
+            width: 50px; /* Enforcing a smaller width */
+            max-width: 50px; /* Ensuring the maximum width is also limited */
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            text-align: center; /* Center the text for better alignment of digits */
+        }
+    </style>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/themes/base/jquery-ui.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.44.0/docxtemplater.js"></script>
+        <script src="https://unpkg.com/pizzip@3.1.5/dist/pizzip.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+        <script src="https://unpkg.com/pizzip@3.1.5/dist/pizzip-utils.js"></script>
+        <!--[if IE]>
+            <script type="text/javascript" src="https://unpkg.com/pizzip@3.1.5/dist/pizzip-utils-ie.js"></script>
+        <![endif]-->
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Page -->
+        <div id="page1" class="active">
+            <form id="dataFormPage1" style="text-align: center;">
+                <p style="font-size: 44px; color: blue; font-weight: bold; margin-bottom: 15px;">Data Assistant</p>
+                <img src="data.png" alt="Robot Image" style="width: 200px; height: 200px; display: block; margin: 0 auto;">
+                <button type="button" class="nextBtn" onclick="showPage(2)">Begin</button>
+            </form>
+        </div>
+
+        <!-- Student Demographics Page -->
+        <div id="page2">
+            <form id="dataFormPage2">
+                <h1><span class="title">Student Demographics</span></h1>
+                <div class="fields">
+                    <div class="input-field">
+                        <label for="ClientID">ID:</label>
+                        <input type="text" id="ClientID" name="ClientID" class="autofill" required><br>
+                    </div>
+                    <div class="input-field">
+                        <label for="FirstName">First Name</label>
+                        <input type="text" id="FirstName" name="FirstName" required><br>
+                    </div>
+                    <div class="input-field">
+                        <label for="LastName">Last Name</label>
+                        <input type="text" id="LastName" name="LastName" required><br>
+                    </div>
+                    <div class="input-field">
+                        <label for="DOB">DOB</label>
+                        <input type="text" id="DOB" name="DOB" required>
+                    </div>
+
+                    <div class="input-field">
+                        <label for="Age">Age</label>
+                        <select id="Age" name="Age" class="styled-dropdown" required>
+                            <option value="">Select Age</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label for="Grade">Grade</label>
+                        <select id="Grade" name="Grade" class="styled-dropdown" required>
+                            <option value="">Select Grade</option>
+                            <option value="K">Kindergarten</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label for="School">School</label>
+                        <input type="text" id="School" name="School" required><br>
+                    </div>
+                    <div class="input-field">
+                        <label for="GEN">Gender</label>
+                        <select id="GEN" name="GEN" class="styled-dropdown" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label for="ETH">Ethnicity</label>
+                        <select id="ETH" name="ETH" class="styled-dropdown" required>
+                            <option value="">Select Ethnicity</option>
+                            <option value="Asian">Asian</option>
+                            <option value="Black">Black</option>
+                            <option value="Hispanic">Hispanic</option>
+                            <option value="White">White</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="backBtn" onclick="showPage(1)">Back</button>
+                <button type="button" class="nextBtn" onclick="showPage(3)">Next</button>
+            </form>
+        </div>
+
+    <!-- Wide Range of Achievement Test, 5th Edition Page -->
+    <div id="page3">
+        <form id="dataFormPage3">
+            <h1><span class="title">Wide Range Achievement Test, 5th Edition</span></h1>
+            <div class="fields">
+                <div class="input-field">
+                    <label for="mc">Math Computation</label>
+                    <input type="text" id="mc" name="mc" class="small-input" required><br>
+                </div>
+                <div class="input-field">
+                    <label for="sp">Spelling</label>
+                    <input type="text" id="sp" name="sp" class="small-input" required><br>
+                </div>
+                <div class="input-field">
+                    <label for="wr">Word Reading</label>
+                    <input type="text" id="wr" name="wr" class="small-input" required><br>
+                </div>
+                <div class="input-field">
+                    <label for="sc">Sentence Comprehension</label>
+                    <input type="text" id="sc" name="sc" class="small-input" required><br>
+                </div>
+                <div class="input-field">
+                    <label for="read">Reading</label>
+                    <input type="text" id="read" name="read" class="small-input" required><br>
+                </div>  
+            </div>
+                <button type="button" class="backBtn" onclick="showPage(2)">Back</button>
+                <button type="button" class="nextBtn" onclick="showPage(4)">Next</button>
+            </form>
+        </div>
+
+             <!-- Last Page: Generate Report -->
+             <div id="page4">
+                <form id="dataFormPage4" style="text-align: center;">
+                    <h1><span class="title">Upload Template and Generate Report</span></h1>
+                    <div style="margin-bottom: 20px;">
+                        <img src="data.png" alt="Centered Image" style="width: 200px; height: 200px; margin: 0 auto; display: block;">
+                    </div>
+                    <label for="templateFile" style="display: block; margin-bottom: 10px;"></label>
+                    <label for="templateFile" class="custom-file-upload">Select Template</label>
+                    <input type="file" id="templateFile" name="templateFile" accept=".docx" required style="display: none;">
+
+                    <button type="button" class="backBtn" onclick="showPage(3)">Back</button>
+                    <button type="button" class="nextBtn" onclick="generate()">Generate Report</button>
+                </form>
+            </div>
+    </div>
+    <script src="service-worker.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+
+    $(function() {
+        $("#DOB").datepicker({
+            dateFormat: 'yy-mm-dd', // Set your desired date format
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0", // Allow selection of years from 100 years ago to current year
+            maxDate: '0', // Disallow future dates
+        });
+    });
+
+        function showPage(pageNumber) {
+            const pages = document.querySelectorAll('.container > div');
+            pages.forEach((page, index) => {
+                if (index === pageNumber - 1) {
+                    page.classList.add('active');
+                } else {
+                    page.classList.remove('active')
+                }
+            });
+        }
+
+    window.generate = function generate() {
+    const formData = new FormData();
+    for (let i = 1; i <= 4; i++) {
+        new FormData(document.getElementById(`dataFormPage${i}`)).forEach((value, key) => {
+            formData.append(key, value);
+        });
+    };
+
+    // Ensure formData.mc exists and is a string (if it's coming from a form input)
+    if (formData.has('mc')) {
+        // Condition for mc = 40
+        if (formData.get('mc') === "40") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 41
+        if (formData.get('mc') === "41") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 42
+        if (formData.get('mc') === "42") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 43
+        if (formData.get('mc') === "43") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 44
+        if (formData.get('mc') === "44") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 45
+        if (formData.get('mc') === "45") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 46
+        if (formData.get('mc') === "46") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 47
+        if (formData.get('mc') === "47") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 48
+        if (formData.get('mc') === "48") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 49
+        if (formData.get('mc') === "49") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 50
+        if (formData.get('mc') === "50") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 51
+        if (formData.get('mc') === "51") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 52
+        if (formData.get('mc') === "52") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 53
+        if (formData.get('mc') === "53") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 54
+        if (formData.get('mc') === "54") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 55
+        if (formData.get('mc') === "55") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 56
+        if (formData.get('mc') === "56") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 57
+        if (formData.get('mc') === "57") {
+            formData.set('mc_pr', "0.1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 58
+        if (formData.get('mc') === "58") {
+            formData.set('mc_pr', "0.2");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 59
+        if (formData.get('mc') === "59") {
+            formData.set('mc_pr', "0.3");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 60
+        if (formData.get('mc') === "60") {
+            formData.set('mc_pr', "0.4");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 61
+        if (formData.get('mc') === "61") {
+            formData.set('mc_pr', "0.5");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 62
+        if (formData.get('mc') === "62") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 63
+        if (formData.get('mc') === "63") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 64
+        if (formData.get('mc') === "64") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 65
+        if (formData.get('mc') === "65") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 66
+        if (formData.get('mc') === "66") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+        
+        // Condition for mc = 67
+        if (formData.get('mc') === "67") {
+            formData.set('mc_pr', "1");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 68
+        if (formData.get('mc') === "68") {
+            formData.set('mc_pr', "2");
+            formData.set('mc_cat', "Extremely Low");
+        }
+
+        // Condition for mc = 69
+        if (formData.get('mc') === "69") {
+            formData.set('mc_pr', "2");
+            formData.set('mc_cat', "Extremely Low");
+        }              
+            
+        // Condition for mc = 70
+        if (formData.get('mc') === "70") {
+            formData.set('mc_pr', "2");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 71
+        if (formData.get('mc') === "71") {
+            formData.set('mc_pr', "3");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 72
+        if (formData.get('mc') === "72") {
+            formData.set('mc_pr', "3");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 73
+        if (formData.get('mc') === "73") {
+            formData.set('mc_pr', "4");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 74
+        if (formData.get('mc') === "74") {
+            formData.set('mc_pr', "4");
+            formData.set('mc_cat', "Very Low");
+        }   
+
+        // Condition for mc = 75
+        if (formData.get('mc') === "75") {
+            formData.set('mc_pr', "5");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 76
+        if (formData.get('mc') === "76") {
+            formData.set('mc_pr', "5");
+            formData.set('mc_cat', "Very Low");
+        }
+        
+        // Condition for mc = 77
+        if (formData.get('mc') === "77") {
+            formData.set('mc_pr', "6");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 78
+        if (formData.get('mc') === "78") {
+            formData.set('mc_pr', "7");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 79
+        if (formData.get('mc') === "79") {
+            formData.set('mc_pr', "8");
+            formData.set('mc_cat', "Very Low");
+        }
+
+        // Condition for mc = 80
+        if (formData.get('mc') === "80") {
+            formData.set('mc_pr', "9");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 81
+        if (formData.get('mc') === "81") {
+            formData.set('mc_pr', "10");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 82
+        if (formData.get('mc') === "82") {
+            formData.set('mc_pr', "12");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 83
+        if (formData.get('mc') === "83") {
+            formData.set('mc_pr', "13");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 84
+        if (formData.get('mc') === "84") {
+            formData.set('mc_pr', "14");
+            formData.set('mc_cat', "Low Average");
+        }   
+
+        // Condition for mc = 85
+        if (formData.get('mc') === "85") {
+            formData.set('mc_pr', "16");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 86
+        if (formData.get('mc') === "86") {
+            formData.set('mc_pr', "18");
+            formData.set('mc_cat', "Low Average");
+        }
+        
+        // Condition for mc = 87
+        if (formData.get('mc') === "87") {
+            formData.set('mc_pr', "19");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 88
+        if (formData.get('mc') === "88") {
+            formData.set('mc_pr', "21");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 89
+        if (formData.get('mc') === "89") {
+            formData.set('mc_pr', "23");
+            formData.set('mc_cat', "Low Average");
+        }
+
+        // Condition for mc = 90
+        if (formData.get('mc') === "90") {
+            formData.set('mc_pr', "25");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 91
+        if (formData.get('mc') === "91") {
+            formData.set('mc_pr', "27");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 92
+        if (formData.get('mc') === "92") {
+            formData.set('mc_pr', "30");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 93
+        if (formData.get('mc') === "93") {
+            formData.set('mc_pr', "32");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 94
+        if (formData.get('mc') === "94") {
+            formData.set('mc_pr', "34");
+            formData.set('mc_cat', "Average");
+        }   
+
+        // Condition for mc = 95
+        if (formData.get('mc') === "95") {
+            formData.set('mc_pr', "37");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 96
+        if (formData.get('mc') === "96") {
+            formData.set('mc_pr', "40");
+            formData.set('mc_cat', "Average");
+        }
+        
+        // Condition for mc = 97
+        if (formData.get('mc') === "97") {
+            formData.set('mc_pr', "42");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 98
+        if (formData.get('mc') === "98") {
+            formData.set('mc_pr', "45");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 99
+        if (formData.get('mc') === "99") {
+            formData.set('mc_pr', "47");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 100
+        if (formData.get('mc') === "100") {
+            formData.set('mc_pr', "50");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 101
+        if (formData.get('mc') === "101") {
+            formData.set('mc_pr', "53");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 102
+        if (formData.get('mc') === "102") {
+            formData.set('mc_pr', "55");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 103
+        if (formData.get('mc') === "103") {
+            formData.set('mc_pr', "58");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 104
+        if (formData.get('mc') === "104") {
+            formData.set('mc_pr', "61");
+            formData.set('mc_cat', "Average");
+        }   
+
+        // Condition for mc = 105
+        if (formData.get('mc') === "105") {
+            formData.set('mc_pr', "63");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 106
+        if (formData.get('mc') === "106") {
+            formData.set('mc_pr', "66");
+            formData.set('mc_cat', "Average");
+        }
+        
+        // Condition for mc = 107
+        if (formData.get('mc') === "107") {
+            formData.set('mc_pr', "68");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 108
+        if (formData.get('mc') === "108") {
+            formData.set('mc_pr', "70");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 109
+        if (formData.get('mc') === "109") {
+            formData.set('mc_pr', "73");
+            formData.set('mc_cat', "Average");
+        }
+
+        // Condition for mc = 110
+        if (formData.get('mc') === "110") {
+            formData.set('mc_pr', "75");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 111
+        if (formData.get('mc') === "111") {
+            formData.set('mc_pr', "77");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 112
+        if (formData.get('mc') === "112") {
+            formData.set('mc_pr', "79");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 113
+        if (formData.get('mc') === "113") {
+            formData.set('mc_pr', "81");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 114
+        if (formData.get('mc') === "114") {
+            formData.set('mc_pr', "82");
+            formData.set('mc_cat', "High Average");
+        }   
+
+        // Condition for mc = 115
+        if (formData.get('mc') === "115") {
+            formData.set('mc_pr', "84");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 116
+        if (formData.get('mc') === "116") {
+            formData.set('mc_pr', "86");
+            formData.set('mc_cat', "High Average");
+        }
+        
+        // Condition for mc = 117
+        if (formData.get('mc') === "117") {
+            formData.set('mc_pr', "87");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 118
+        if (formData.get('mc') === "118") {
+            formData.set('mc_pr', "88");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 119
+        if (formData.get('mc') === "119") {
+            formData.set('mc_pr', "90");
+            formData.set('mc_cat', "High Average");
+        }
+
+        // Condition for mc = 120
+        if (formData.get('mc') === "120") {
+            formData.set('mc_pr', "91");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 121
+        if (formData.get('mc') === "121") {
+            formData.set('mc_pr', "92");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 122
+        if (formData.get('mc') === "122") {
+            formData.set('mc_pr', "93");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 123
+        if (formData.get('mc') === "123") {
+            formData.set('mc_pr', "94");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 124
+        if (formData.get('mc') === "124") {
+            formData.set('mc_pr', "95");
+            formData.set('mc_cat', "Very High");
+        }   
+
+        // Condition for mc = 125
+        if (formData.get('mc') === "125") {
+            formData.set('mc_pr', "95");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 126
+        if (formData.get('mc') === "126") {
+            formData.set('mc_pr', "96");
+            formData.set('mc_cat', "Very High");
+        }
+        
+        // Condition for mc = 127
+        if (formData.get('mc') === "127") {
+            formData.set('mc_pr', "96");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 128
+        if (formData.get('mc') === "128") {
+            formData.set('mc_pr', "97");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 129
+        if (formData.get('mc') === "129") {
+            formData.set('mc_pr', "97");
+            formData.set('mc_cat', "Very High");
+        }
+
+        // Condition for mc = 130
+        if (formData.get('mc') === "130") {
+            formData.set('mc_pr', "98");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 131
+        if (formData.get('mc') === "131") {
+            formData.set('mc_pr', "98");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 132
+        if (formData.get('mc') === "132") {
+            formData.set('mc_pr', "98");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 133
+        if (formData.get('mc') === "133") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 134
+        if (formData.get('mc') === "134") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }   
+
+        // Condition for mc = 135
+        if (formData.get('mc') === "135") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 136
+        if (formData.get('mc') === "136") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+        
+        // Condition for mc = 137
+        if (formData.get('mc') === "137") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 138
+        if (formData.get('mc') === "138") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 139
+        if (formData.get('mc') === "139") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+        // Condition for mc = 140
+        if (formData.get('mc') === "140") {
+            formData.set('mc_pr', "99");
+            formData.set('mc_cat', "Extremely High");
+        }
+
+    }
+
+    // Ensure formData.sp exists and is a string (if it's coming from a form input)
+    if (formData.has('sp')) {
+        // Condition for sp = 40
+        if (formData.get('sp') === "40") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 41
+        if (formData.get('sp') === "41") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 42
+        if (formData.get('sp') === "42") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 43
+        if (formData.get('sp') === "43") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 44
+        if (formData.get('sp') === "44") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 45
+        if (formData.get('sp') === "45") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 46
+        if (formData.get('sp') === "46") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 47
+        if (formData.get('sp') === "47") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 48
+        if (formData.get('sp') === "48") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 49
+        if (formData.get('sp') === "49") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 50
+        if (formData.get('sp') === "50") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 51
+        if (formData.get('sp') === "51") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 52
+        if (formData.get('sp') === "52") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 53
+        if (formData.get('sp') === "53") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 54
+        if (formData.get('sp') === "54") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 55
+        if (formData.get('sp') === "55") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 56
+        if (formData.get('sp') === "56") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 57
+        if (formData.get('sp') === "57") {
+            formData.set('sp_pr', "0.1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 58
+        if (formData.get('sp') === "58") {
+            formData.set('sp_pr', "0.2");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 59
+        if (formData.get('sp') === "59") {
+            formData.set('sp_pr', "0.3");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 60
+        if (formData.get('sp') === "60") {
+            formData.set('sp_pr', "0.4");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 61
+        if (formData.get('sp') === "61") {
+            formData.set('sp_pr', "0.5");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 62
+        if (formData.get('sp') === "62") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 63
+        if (formData.get('sp') === "63") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 64
+        if (formData.get('sp') === "64") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 65
+        if (formData.get('sp') === "65") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 66
+        if (formData.get('sp') === "66") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+        
+        // Condition for sp = 67
+        if (formData.get('sp') === "67") {
+            formData.set('sp_pr', "1");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 68
+        if (formData.get('sp') === "68") {
+            formData.set('sp_pr', "2");
+            formData.set('sp_cat', "Extremely Low");
+        }
+
+        // Condition for sp = 69
+        if (formData.get('sp') === "69") {
+            formData.set('sp_pr', "2");
+            formData.set('sp_cat', "Extremely Low");
+        }              
+            
+        // Condition for sp = 70
+        if (formData.get('sp') === "70") {
+            formData.set('sp_pr', "2");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 71
+        if (formData.get('sp') === "71") {
+            formData.set('sp_pr', "3");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 72
+        if (formData.get('sp') === "72") {
+            formData.set('sp_pr', "3");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 73
+        if (formData.get('sp') === "73") {
+            formData.set('sp_pr', "4");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 74
+        if (formData.get('sp') === "74") {
+            formData.set('sp_pr', "4");
+            formData.set('sp_cat', "Very Low");
+        }   
+
+        // Condition for sp = 75
+        if (formData.get('sp') === "75") {
+            formData.set('sp_pr', "5");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 76
+        if (formData.get('sp') === "76") {
+            formData.set('sp_pr', "5");
+            formData.set('sp_cat', "Very Low");
+        }
+        
+        // Condition for sp = 77
+        if (formData.get('sp') === "77") {
+            formData.set('sp_pr', "6");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 78
+        if (formData.get('sp') === "78") {
+            formData.set('sp_pr', "7");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 79
+        if (formData.get('sp') === "79") {
+            formData.set('sp_pr', "8");
+            formData.set('sp_cat', "Very Low");
+        }
+
+        // Condition for sp = 80
+        if (formData.get('sp') === "80") {
+            formData.set('sp_pr', "9");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 81
+        if (formData.get('sp') === "81") {
+            formData.set('sp_pr', "10");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 82
+        if (formData.get('sp') === "82") {
+            formData.set('sp_pr', "12");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 83
+        if (formData.get('sp') === "83") {
+            formData.set('sp_pr', "13");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 84
+        if (formData.get('sp') === "84") {
+            formData.set('sp_pr', "14");
+            formData.set('sp_cat', "Low Average");
+        }   
+
+        // Condition for sp = 85
+        if (formData.get('sp') === "85") {
+            formData.set('sp_pr', "16");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 86
+        if (formData.get('sp') === "86") {
+            formData.set('sp_pr', "18");
+            formData.set('sp_cat', "Low Average");
+        }
+        
+        // Condition for sp = 87
+        if (formData.get('sp') === "87") {
+            formData.set('sp_pr', "19");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 88
+        if (formData.get('sp') === "88") {
+            formData.set('sp_pr', "21");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 89
+        if (formData.get('sp') === "89") {
+            formData.set('sp_pr', "23");
+            formData.set('sp_cat', "Low Average");
+        }
+
+        // Condition for sp = 90
+        if (formData.get('sp') === "90") {
+            formData.set('sp_pr', "25");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 91
+        if (formData.get('sp') === "91") {
+            formData.set('sp_pr', "27");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 92
+        if (formData.get('sp') === "92") {
+            formData.set('sp_pr', "30");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 93
+        if (formData.get('sp') === "93") {
+            formData.set('sp_pr', "32");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 94
+        if (formData.get('sp') === "94") {
+            formData.set('sp_pr', "34");
+            formData.set('sp_cat', "Average");
+        }   
+
+        // Condition for sp = 95
+        if (formData.get('sp') === "95") {
+            formData.set('sp_pr', "37");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 96
+        if (formData.get('sp') === "96") {
+            formData.set('sp_pr', "40");
+            formData.set('sp_cat', "Average");
+        }
+        
+        // Condition for sp = 97
+        if (formData.get('sp') === "97") {
+            formData.set('sp_pr', "42");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 98
+        if (formData.get('sp') === "98") {
+            formData.set('sp_pr', "45");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 99
+        if (formData.get('sp') === "99") {
+            formData.set('sp_pr', "47");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 100
+        if (formData.get('sp') === "100") {
+            formData.set('sp_pr', "50");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 101
+        if (formData.get('sp') === "101") {
+            formData.set('sp_pr', "53");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 102
+        if (formData.get('sp') === "102") {
+            formData.set('sp_pr', "55");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 103
+        if (formData.get('sp') === "103") {
+            formData.set('sp_pr', "58");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 104
+        if (formData.get('sp') === "104") {
+            formData.set('sp_pr', "61");
+            formData.set('sp_cat', "Average");
+        }   
+
+        // Condition for sp = 105
+        if (formData.get('sp') === "105") {
+            formData.set('sp_pr', "63");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 106
+        if (formData.get('sp') === "106") {
+            formData.set('sp_pr', "66");
+            formData.set('sp_cat', "Average");
+        }
+        
+        // Condition for sp = 107
+        if (formData.get('sp') === "107") {
+            formData.set('sp_pr', "68");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 108
+        if (formData.get('sp') === "108") {
+            formData.set('sp_pr', "70");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 109
+        if (formData.get('sp') === "109") {
+            formData.set('sp_pr', "73");
+            formData.set('sp_cat', "Average");
+        }
+
+        // Condition for sp = 110
+        if (formData.get('sp') === "110") {
+            formData.set('sp_pr', "75");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 111
+        if (formData.get('sp') === "111") {
+            formData.set('sp_pr', "77");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 112
+        if (formData.get('sp') === "112") {
+            formData.set('sp_pr', "79");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 113
+        if (formData.get('sp') === "113") {
+            formData.set('sp_pr', "81");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 114
+        if (formData.get('sp') === "114") {
+            formData.set('sp_pr', "82");
+            formData.set('sp_cat', "High Average");
+        }   
+
+        // Condition for sp = 115
+        if (formData.get('sp') === "115") {
+            formData.set('sp_pr', "84");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 116
+        if (formData.get('sp') === "116") {
+            formData.set('sp_pr', "86");
+            formData.set('sp_cat', "High Average");
+        }
+        
+        // Condition for sp = 117
+        if (formData.get('sp') === "117") {
+            formData.set('sp_pr', "87");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 118
+        if (formData.get('sp') === "118") {
+            formData.set('sp_pr', "88");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 119
+        if (formData.get('sp') === "119") {
+            formData.set('sp_pr', "90");
+            formData.set('sp_cat', "High Average");
+        }
+
+        // Condition for sp = 120
+        if (formData.get('sp') === "120") {
+            formData.set('sp_pr', "91");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 121
+        if (formData.get('sp') === "121") {
+            formData.set('sp_pr', "92");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 122
+        if (formData.get('sp') === "122") {
+            formData.set('sp_pr', "93");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 123
+        if (formData.get('sp') === "123") {
+            formData.set('sp_pr', "94");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 124
+        if (formData.get('sp') === "124") {
+            formData.set('sp_pr', "95");
+            formData.set('sp_cat', "Very High");
+        }   
+
+        // Condition for sp = 125
+        if (formData.get('sp') === "125") {
+            formData.set('sp_pr', "95");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 126
+        if (formData.get('sp') === "126") {
+            formData.set('sp_pr', "96");
+            formData.set('sp_cat', "Very High");
+        }
+        
+        // Condition for sp = 127
+        if (formData.get('sp') === "127") {
+            formData.set('sp_pr', "96");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 128
+        if (formData.get('sp') === "128") {
+            formData.set('sp_pr', "97");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 129
+        if (formData.get('sp') === "129") {
+            formData.set('sp_pr', "97");
+            formData.set('sp_cat', "Very High");
+        }
+
+        // Condition for sp = 130
+        if (formData.get('sp') === "130") {
+            formData.set('sp_pr', "98");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 131
+        if (formData.get('sp') === "131") {
+            formData.set('sp_pr', "98");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 132
+        if (formData.get('sp') === "132") {
+            formData.set('sp_pr', "98");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 133
+        if (formData.get('sp') === "133") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 134
+        if (formData.get('sp') === "134") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }   
+
+        // Condition for sp = 135
+        if (formData.get('sp') === "135") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 136
+        if (formData.get('sp') === "136") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+        
+        // Condition for sp = 137
+        if (formData.get('sp') === "137") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 138
+        if (formData.get('sp') === "138") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 139
+        if (formData.get('sp') === "139") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+
+        // Condition for sp = 140
+        if (formData.get('sp') === "140") {
+            formData.set('sp_pr', "99");
+            formData.set('sp_cat', "Extremely High");
+        }
+    }
+
+    // Ensure formData.wr exists and is a string (if it's coming from a form input)
+    if (formData.has('wr')) {
+        // Condition for wr = 40
+        if (formData.get('wr') === "40") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 41
+        if (formData.get('wr') === "41") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 42
+        if (formData.get('wr') === "42") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 43
+        if (formData.get('wr') === "43") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 44
+        if (formData.get('wr') === "44") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 45
+        if (formData.get('wr') === "45") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 46
+        if (formData.get('wr') === "46") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 47
+        if (formData.get('wr') === "47") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 48
+        if (formData.get('wr') === "48") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 49
+        if (formData.get('wr') === "49") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 50
+        if (formData.get('wr') === "50") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 51
+        if (formData.get('wr') === "51") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 52
+        if (formData.get('wr') === "52") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 53
+        if (formData.get('wr') === "53") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 54
+        if (formData.get('wr') === "54") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 55
+        if (formData.get('wr') === "55") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 56
+        if (formData.get('wr') === "56") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 57
+        if (formData.get('wr') === "57") {
+            formData.set('wr_pr', "0.1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 58
+        if (formData.get('wr') === "58") {
+            formData.set('wr_pr', "0.2");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 59
+        if (formData.get('wr') === "59") {
+            formData.set('wr_pr', "0.3");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 60
+        if (formData.get('wr') === "60") {
+            formData.set('wr_pr', "0.4");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 61
+        if (formData.get('wr') === "61") {
+            formData.set('wr_pr', "0.5");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 62
+        if (formData.get('wr') === "62") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 63
+        if (formData.get('wr') === "63") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 64
+        if (formData.get('wr') === "64") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 65
+        if (formData.get('wr') === "65") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 66
+        if (formData.get('wr') === "66") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+        
+        // Condition for wr = 67
+        if (formData.get('wr') === "67") {
+            formData.set('wr_pr', "1");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 68
+        if (formData.get('wr') === "68") {
+            formData.set('wr_pr', "2");
+            formData.set('wr_cat', "Extremely Low");
+        }
+
+        // Condition for wr = 69
+        if (formData.get('wr') === "69") {
+            formData.set('wr_pr', "2");
+            formData.set('wr_cat', "Extremely Low");
+        }              
+            
+        // Condition for wr = 70
+        if (formData.get('wr') === "70") {
+            formData.set('wr_pr', "2");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 71
+        if (formData.get('wr') === "71") {
+            formData.set('wr_pr', "3");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 72
+        if (formData.get('wr') === "72") {
+            formData.set('wr_pr', "3");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 73
+        if (formData.get('wr') === "73") {
+            formData.set('wr_pr', "4");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 74
+        if (formData.get('wr') === "74") {
+            formData.set('wr_pr', "4");
+            formData.set('wr_cat', "Very Low");
+        }   
+
+        // Condition for wr = 75
+        if (formData.get('wr') === "75") {
+            formData.set('wr_pr', "5");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 76
+        if (formData.get('wr') === "76") {
+            formData.set('wr_pr', "5");
+            formData.set('wr_cat', "Very Low");
+        }
+        
+        // Condition for wr = 77
+        if (formData.get('wr') === "77") {
+            formData.set('wr_pr', "6");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 78
+        if (formData.get('wr') === "78") {
+            formData.set('wr_pr', "7");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 79
+        if (formData.get('wr') === "79") {
+            formData.set('wr_pr', "8");
+            formData.set('wr_cat', "Very Low");
+        }
+
+        // Condition for wr = 80
+        if (formData.get('wr') === "80") {
+            formData.set('wr_pr', "9");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 81
+        if (formData.get('wr') === "81") {
+            formData.set('wr_pr', "10");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 82
+        if (formData.get('wr') === "82") {
+            formData.set('wr_pr', "12");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 83
+        if (formData.get('wr') === "83") {
+            formData.set('wr_pr', "13");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 84
+        if (formData.get('wr') === "84") {
+            formData.set('wr_pr', "14");
+            formData.set('wr_cat', "Low Average");
+        }   
+
+        // Condition for wr = 85
+        if (formData.get('wr') === "85") {
+            formData.set('wr_pr', "16");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 86
+        if (formData.get('wr') === "86") {
+            formData.set('wr_pr', "18");
+            formData.set('wr_cat', "Low Average");
+        }
+        
+        // Condition for wr = 87
+        if (formData.get('wr') === "87") {
+            formData.set('wr_pr', "19");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 88
+        if (formData.get('wr') === "88") {
+            formData.set('wr_pr', "21");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 89
+        if (formData.get('wr') === "89") {
+            formData.set('wr_pr', "23");
+            formData.set('wr_cat', "Low Average");
+        }
+
+        // Condition for wr = 90
+        if (formData.get('wr') === "90") {
+            formData.set('wr_pr', "25");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 91
+        if (formData.get('wr') === "91") {
+            formData.set('wr_pr', "27");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 92
+        if (formData.get('wr') === "92") {
+            formData.set('wr_pr', "30");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 93
+        if (formData.get('wr') === "93") {
+            formData.set('wr_pr', "32");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 94
+        if (formData.get('wr') === "94") {
+            formData.set('wr_pr', "34");
+            formData.set('wr_cat', "Average");
+        }   
+
+        // Condition for wr = 95
+        if (formData.get('wr') === "95") {
+            formData.set('wr_pr', "37");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 96
+        if (formData.get('wr') === "96") {
+            formData.set('wr_pr', "40");
+            formData.set('wr_cat', "Average");
+        }
+        
+        // Condition for wr = 97
+        if (formData.get('wr') === "97") {
+            formData.set('wr_pr', "42");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 98
+        if (formData.get('wr') === "98") {
+            formData.set('wr_pr', "45");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 99
+        if (formData.get('wr') === "99") {
+            formData.set('wr_pr', "47");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 100
+        if (formData.get('wr') === "100") {
+            formData.set('wr_pr', "50");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 101
+        if (formData.get('wr') === "101") {
+            formData.set('wr_pr', "53");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 102
+        if (formData.get('wr') === "102") {
+            formData.set('wr_pr', "55");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 103
+        if (formData.get('wr') === "103") {
+            formData.set('wr_pr', "58");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 104
+        if (formData.get('wr') === "104") {
+            formData.set('wr_pr', "61");
+            formData.set('wr_cat', "Average");
+        }   
+
+        // Condition for wr = 105
+        if (formData.get('wr') === "105") {
+            formData.set('wr_pr', "63");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 106
+        if (formData.get('wr') === "106") {
+            formData.set('wr_pr', "66");
+            formData.set('wr_cat', "Average");
+        }
+        
+        // Condition for wr = 107
+        if (formData.get('wr') === "107") {
+            formData.set('wr_pr', "68");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 108
+        if (formData.get('wr') === "108") {
+            formData.set('wr_pr', "70");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 109
+        if (formData.get('wr') === "109") {
+            formData.set('wr_pr', "73");
+            formData.set('wr_cat', "Average");
+        }
+
+        // Condition for wr = 110
+        if (formData.get('wr') === "110") {
+            formData.set('wr_pr', "75");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 111
+        if (formData.get('wr') === "111") {
+            formData.set('wr_pr', "77");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 112
+        if (formData.get('wr') === "112") {
+            formData.set('wr_pr', "79");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 113
+        if (formData.get('wr') === "113") {
+            formData.set('wr_pr', "81");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 114
+        if (formData.get('wr') === "114") {
+            formData.set('wr_pr', "82");
+            formData.set('wr_cat', "High Average");
+        }   
+
+        // Condition for wr = 115
+        if (formData.get('wr') === "115") {
+            formData.set('wr_pr', "84");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 116
+        if (formData.get('wr') === "116") {
+            formData.set('wr_pr', "86");
+            formData.set('wr_cat', "High Average");
+        }
+        
+        // Condition for wr = 117
+        if (formData.get('wr') === "117") {
+            formData.set('wr_pr', "87");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 118
+        if (formData.get('wr') === "118") {
+            formData.set('wr_pr', "88");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 119
+        if (formData.get('wr') === "119") {
+            formData.set('wr_pr', "90");
+            formData.set('wr_cat', "High Average");
+        }
+
+        // Condition for wr = 120
+        if (formData.get('wr') === "120") {
+            formData.set('wr_pr', "91");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 121
+        if (formData.get('wr') === "121") {
+            formData.set('wr_pr', "92");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 122
+        if (formData.get('wr') === "122") {
+            formData.set('wr_pr', "93");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 123
+        if (formData.get('wr') === "123") {
+            formData.set('wr_pr', "94");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 124
+        if (formData.get('wr') === "124") {
+            formData.set('wr_pr', "95");
+            formData.set('wr_cat', "Very High");
+        }   
+
+        // Condition for wr = 125
+        if (formData.get('wr') === "125") {
+            formData.set('wr_pr', "95");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 126
+        if (formData.get('wr') === "126") {
+            formData.set('wr_pr', "96");
+            formData.set('wr_cat', "Very High");
+        }
+        
+        // Condition for wr = 127
+        if (formData.get('wr') === "127") {
+            formData.set('wr_pr', "96");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 128
+        if (formData.get('wr') === "128") {
+            formData.set('wr_pr', "97");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 129
+        if (formData.get('wr') === "129") {
+            formData.set('wr_pr', "97");
+            formData.set('wr_cat', "Very High");
+        }
+
+        // Condition for wr = 130
+        if (formData.get('wr') === "130") {
+            formData.set('wr_pr', "98");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 131
+        if (formData.get('wr') === "131") {
+            formData.set('wr_pr', "98");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 132
+        if (formData.get('wr') === "132") {
+            formData.set('wr_pr', "98");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 133
+        if (formData.get('wr') === "133") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 134
+        if (formData.get('wr') === "134") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }   
+
+        // Condition for wr = 135
+        if (formData.get('wr') === "135") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 136
+        if (formData.get('wr') === "136") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+        
+        // Condition for wr = 137
+        if (formData.get('wr') === "137") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 138
+        if (formData.get('wr') === "138") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 139
+        if (formData.get('wr') === "139") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+
+        // Condition for wr = 140
+        if (formData.get('wr') === "140") {
+            formData.set('wr_pr', "99");
+            formData.set('wr_cat', "Extremely High");
+        }
+    }
+
+    // Ensure formData.sc exists and is a string (if it's coming from a form input)
+    if (formData.has('sc')) {
+        // Condition for sc = 40
+        if (formData.get('sc') === "40") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 41
+        if (formData.get('sc') === "41") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 42
+        if (formData.get('sc') === "42") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 43
+        if (formData.get('sc') === "43") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 44
+        if (formData.get('sc') === "44") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 45
+        if (formData.get('sc') === "45") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 46
+        if (formData.get('sc') === "46") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 47
+        if (formData.get('sc') === "47") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 48
+        if (formData.get('sc') === "48") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 49
+        if (formData.get('sc') === "49") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 50
+        if (formData.get('sc') === "50") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 51
+        if (formData.get('sc') === "51") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 52
+        if (formData.get('sc') === "52") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 53
+        if (formData.get('sc') === "53") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 54
+        if (formData.get('sc') === "54") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 55
+        if (formData.get('sc') === "55") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 56
+        if (formData.get('sc') === "56") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 57
+        if (formData.get('sc') === "57") {
+            formData.set('sc_pr', "0.1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 58
+        if (formData.get('sc') === "58") {
+            formData.set('sc_pr', "0.2");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 59
+        if (formData.get('sc') === "59") {
+            formData.set('sc_pr', "0.3");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 60
+        if (formData.get('sc') === "60") {
+            formData.set('sc_pr', "0.4");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 61
+        if (formData.get('sc') === "61") {
+            formData.set('sc_pr', "0.5");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 62
+        if (formData.get('sc') === "62") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 63
+        if (formData.get('sc') === "63") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 64
+        if (formData.get('sc') === "64") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 65
+        if (formData.get('sc') === "65") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 66
+        if (formData.get('sc') === "66") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+        
+        // Condition for sc = 67
+        if (formData.get('sc') === "67") {
+            formData.set('sc_pr', "1");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 68
+        if (formData.get('sc') === "68") {
+            formData.set('sc_pr', "2");
+            formData.set('sc_cat', "Extremely Low");
+        }
+
+        // Condition for sc = 69
+        if (formData.get('sc') === "69") {
+            formData.set('sc_pr', "2");
+            formData.set('sc_cat', "Extremely Low");
+        }              
+            
+        // Condition for sc = 70
+        if (formData.get('sc') === "70") {
+            formData.set('sc_pr', "2");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 71
+        if (formData.get('sc') === "71") {
+            formData.set('sc_pr', "3");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 72
+        if (formData.get('sc') === "72") {
+            formData.set('sc_pr', "3");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 73
+        if (formData.get('sc') === "73") {
+            formData.set('sc_pr', "4");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 74
+        if (formData.get('sc') === "74") {
+            formData.set('sc_pr', "4");
+            formData.set('sc_cat', "Very Low");
+        }   
+
+        // Condition for sc = 75
+        if (formData.get('sc') === "75") {
+            formData.set('sc_pr', "5");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 76
+        if (formData.get('sc') === "76") {
+            formData.set('sc_pr', "5");
+            formData.set('sc_cat', "Very Low");
+        }
+        
+        // Condition for sc = 77
+        if (formData.get('sc') === "77") {
+            formData.set('sc_pr', "6");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 78
+        if (formData.get('sc') === "78") {
+            formData.set('sc_pr', "7");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 79
+        if (formData.get('sc') === "79") {
+            formData.set('sc_pr', "8");
+            formData.set('sc_cat', "Very Low");
+        }
+
+        // Condition for sc = 80
+        if (formData.get('sc') === "80") {
+            formData.set('sc_pr', "9");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 81
+        if (formData.get('sc') === "81") {
+            formData.set('sc_pr', "10");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 82
+        if (formData.get('sc') === "82") {
+            formData.set('sc_pr', "12");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 83
+        if (formData.get('sc') === "83") {
+            formData.set('sc_pr', "13");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 84
+        if (formData.get('sc') === "84") {
+            formData.set('sc_pr', "14");
+            formData.set('sc_cat', "Low Average");
+        }   
+
+        // Condition for sc = 85
+        if (formData.get('sc') === "85") {
+            formData.set('sc_pr', "16");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 86
+        if (formData.get('sc') === "86") {
+            formData.set('sc_pr', "18");
+            formData.set('sc_cat', "Low Average");
+        }
+        
+        // Condition for sc = 87
+        if (formData.get('sc') === "87") {
+            formData.set('sc_pr', "19");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 88
+        if (formData.get('sc') === "88") {
+            formData.set('sc_pr', "21");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 89
+        if (formData.get('sc') === "89") {
+            formData.set('sc_pr', "23");
+            formData.set('sc_cat', "Low Average");
+        }
+
+        // Condition for sc = 90
+        if (formData.get('sc') === "90") {
+            formData.set('sc_pr', "25");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 91
+        if (formData.get('sc') === "91") {
+            formData.set('sc_pr', "27");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 92
+        if (formData.get('sc') === "92") {
+            formData.set('sc_pr', "30");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 93
+        if (formData.get('sc') === "93") {
+            formData.set('sc_pr', "32");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 94
+        if (formData.get('sc') === "94") {
+            formData.set('sc_pr', "34");
+            formData.set('sc_cat', "Average");
+        }   
+
+        // Condition for sc = 95
+        if (formData.get('sc') === "95") {
+            formData.set('sc_pr', "37");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 96
+        if (formData.get('sc') === "96") {
+            formData.set('sc_pr', "40");
+            formData.set('sc_cat', "Average");
+        }
+        
+        // Condition for sc = 97
+        if (formData.get('sc') === "97") {
+            formData.set('sc_pr', "42");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 98
+        if (formData.get('sc') === "98") {
+            formData.set('sc_pr', "45");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 99
+        if (formData.get('sc') === "99") {
+            formData.set('sc_pr', "47");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 100
+        if (formData.get('sc') === "100") {
+            formData.set('sc_pr', "50");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 101
+        if (formData.get('sc') === "101") {
+            formData.set('sc_pr', "53");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 102
+        if (formData.get('sc') === "102") {
+            formData.set('sc_pr', "55");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 103
+        if (formData.get('sc') === "103") {
+            formData.set('sc_pr', "58");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 104
+        if (formData.get('sc') === "104") {
+            formData.set('sc_pr', "61");
+            formData.set('sc_cat', "Average");
+        }   
+
+        // Condition for sc = 105
+        if (formData.get('sc') === "105") {
+            formData.set('sc_pr', "63");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 106
+        if (formData.get('sc') === "106") {
+            formData.set('sc_pr', "66");
+            formData.set('sc_cat', "Average");
+        }
+        
+        // Condition for sc = 107
+        if (formData.get('sc') === "107") {
+            formData.set('sc_pr', "68");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 108
+        if (formData.get('sc') === "108") {
+            formData.set('sc_pr', "70");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 109
+        if (formData.get('sc') === "109") {
+            formData.set('sc_pr', "73");
+            formData.set('sc_cat', "Average");
+        }
+
+        // Condition for sc = 110
+        if (formData.get('sc') === "110") {
+            formData.set('sc_pr', "75");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 111
+        if (formData.get('sc') === "111") {
+            formData.set('sc_pr', "77");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 112
+        if (formData.get('sc') === "112") {
+            formData.set('sc_pr', "79");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 113
+        if (formData.get('sc') === "113") {
+            formData.set('sc_pr', "81");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 114
+        if (formData.get('sc') === "114") {
+            formData.set('sc_pr', "82");
+            formData.set('sc_cat', "High Average");
+        }   
+
+        // Condition for sc = 115
+        if (formData.get('sc') === "115") {
+            formData.set('sc_pr', "84");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 116
+        if (formData.get('sc') === "116") {
+            formData.set('sc_pr', "86");
+            formData.set('sc_cat', "High Average");
+        }
+        
+        // Condition for sc = 117
+        if (formData.get('sc') === "117") {
+            formData.set('sc_pr', "87");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 118
+        if (formData.get('sc') === "118") {
+            formData.set('sc_pr', "88");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 119
+        if (formData.get('sc') === "119") {
+            formData.set('sc_pr', "90");
+            formData.set('sc_cat', "High Average");
+        }
+
+        // Condition for sc = 120
+        if (formData.get('sc') === "120") {
+            formData.set('sc_pr', "91");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 121
+        if (formData.get('sc') === "121") {
+            formData.set('sc_pr', "92");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 122
+        if (formData.get('sc') === "122") {
+            formData.set('sc_pr', "93");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 123
+        if (formData.get('sc') === "123") {
+            formData.set('sc_pr', "94");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 124
+        if (formData.get('sc') === "124") {
+            formData.set('sc_pr', "95");
+            formData.set('sc_cat', "Very High");
+        }   
+
+        // Condition for sc = 125
+        if (formData.get('sc') === "125") {
+            formData.set('sc_pr', "95");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 126
+        if (formData.get('sc') === "126") {
+            formData.set('sc_pr', "96");
+            formData.set('sc_cat', "Very High");
+        }
+        
+        // Condition for sc = 127
+        if (formData.get('sc') === "127") {
+            formData.set('sc_pr', "96");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 128
+        if (formData.get('sc') === "128") {
+            formData.set('sc_pr', "97");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 129
+        if (formData.get('sc') === "129") {
+            formData.set('sc_pr', "97");
+            formData.set('sc_cat', "Very High");
+        }
+
+        // Condition for sc = 130
+        if (formData.get('sc') === "130") {
+            formData.set('sc_pr', "98");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 131
+        if (formData.get('sc') === "131") {
+            formData.set('sc_pr', "98");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 132
+        if (formData.get('sc') === "132") {
+            formData.set('sc_pr', "98");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 133
+        if (formData.get('sc') === "133") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 134
+        if (formData.get('sc') === "134") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }   
+
+        // Condition for sc = 135
+        if (formData.get('sc') === "135") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 136
+        if (formData.get('sc') === "136") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+        
+        // Condition for sc = 137
+        if (formData.get('sc') === "137") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 138
+        if (formData.get('sc') === "138") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 139
+        if (formData.get('sc') === "139") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+        // Condition for sc = 140
+        if (formData.get('sc') === "140") {
+            formData.set('sc_pr', "99");
+            formData.set('sc_cat', "Extremely High");
+        }
+
+    }
+
+    // Ensure formData.read exists and is a string (if it's coming from a form input)
+    if (formData.has('read')) {
+        // Condition for read = 40
+        if (formData.get('read') === "40") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 41
+        if (formData.get('read') === "41") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 42
+        if (formData.get('read') === "42") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 43
+        if (formData.get('read') === "43") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 44
+        if (formData.get('read') === "44") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 45
+        if (formData.get('read') === "45") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 46
+        if (formData.get('read') === "46") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 47
+        if (formData.get('read') === "47") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 48
+        if (formData.get('read') === "48") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 49
+        if (formData.get('read') === "49") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 50
+        if (formData.get('read') === "50") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 51
+        if (formData.get('read') === "51") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 52
+        if (formData.get('read') === "52") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 53
+        if (formData.get('read') === "53") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 54
+        if (formData.get('read') === "54") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 55
+        if (formData.get('read') === "55") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 56
+        if (formData.get('read') === "56") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 57
+        if (formData.get('read') === "57") {
+            formData.set('read_pr', "0.1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 58
+        if (formData.get('read') === "58") {
+            formData.set('read_pr', "0.2");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 59
+        if (formData.get('read') === "59") {
+            formData.set('read_pr', "0.3");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 60
+        if (formData.get('read') === "60") {
+            formData.set('read_pr', "0.4");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 61
+        if (formData.get('read') === "61") {
+            formData.set('read_pr', "0.5");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 62
+        if (formData.get('read') === "62") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 63
+        if (formData.get('read') === "63") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 64
+        if (formData.get('read') === "64") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 65
+        if (formData.get('read') === "65") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 66
+        if (formData.get('read') === "66") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+        
+        // Condition for read = 67
+        if (formData.get('read') === "67") {
+            formData.set('read_pr', "1");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 68
+        if (formData.get('read') === "68") {
+            formData.set('read_pr', "2");
+            formData.set('read_cat', "Extremely Low");
+        }
+
+        // Condition for read = 69
+        if (formData.get('read') === "69") {
+            formData.set('read_pr', "2");
+            formData.set('read_cat', "Extremely Low");
+        }              
+            
+        // Condition for read = 70
+        if (formData.get('read') === "70") {
+            formData.set('read_pr', "2");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 71
+        if (formData.get('read') === "71") {
+            formData.set('read_pr', "3");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 72
+        if (formData.get('read') === "72") {
+            formData.set('read_pr', "3");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 73
+        if (formData.get('read') === "73") {
+            formData.set('read_pr', "4");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 74
+        if (formData.get('read') === "74") {
+            formData.set('read_pr', "4");
+            formData.set('read_cat', "Very Low");
+        }   
+
+        // Condition for read = 75
+        if (formData.get('read') === "75") {
+            formData.set('read_pr', "5");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 76
+        if (formData.get('read') === "76") {
+            formData.set('read_pr', "5");
+            formData.set('read_cat', "Very Low");
+        }
+        
+        // Condition for read = 77
+        if (formData.get('read') === "77") {
+            formData.set('read_pr', "6");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 78
+        if (formData.get('read') === "78") {
+            formData.set('read_pr', "7");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 79
+        if (formData.get('read') === "79") {
+            formData.set('read_pr', "8");
+            formData.set('read_cat', "Very Low");
+        }
+
+        // Condition for read = 80
+        if (formData.get('read') === "80") {
+            formData.set('read_pr', "9");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 81
+        if (formData.get('read') === "81") {
+            formData.set('read_pr', "10");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 82
+        if (formData.get('read') === "82") {
+            formData.set('read_pr', "12");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 83
+        if (formData.get('read') === "83") {
+            formData.set('read_pr', "13");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 84
+        if (formData.get('read') === "84") {
+            formData.set('read_pr', "14");
+            formData.set('read_cat', "Low Average");
+        }   
+
+        // Condition for read = 85
+        if (formData.get('read') === "85") {
+            formData.set('read_pr', "16");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 86
+        if (formData.get('read') === "86") {
+            formData.set('read_pr', "18");
+            formData.set('read_cat', "Low Average");
+        }
+        
+        // Condition for read = 87
+        if (formData.get('read') === "87") {
+            formData.set('read_pr', "19");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 88
+        if (formData.get('read') === "88") {
+            formData.set('read_pr', "21");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 89
+        if (formData.get('read') === "89") {
+            formData.set('read_pr', "23");
+            formData.set('read_cat', "Low Average");
+        }
+
+        // Condition for read = 90
+        if (formData.get('read') === "90") {
+            formData.set('read_pr', "25");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 91
+        if (formData.get('read') === "91") {
+            formData.set('read_pr', "27");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 92
+        if (formData.get('read') === "92") {
+            formData.set('read_pr', "30");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 93
+        if (formData.get('read') === "93") {
+            formData.set('read_pr', "32");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 94
+        if (formData.get('read') === "94") {
+            formData.set('read_pr', "34");
+            formData.set('read_cat', "Average");
+        }   
+
+        // Condition for read = 95
+        if (formData.get('read') === "95") {
+            formData.set('read_pr', "37");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 96
+        if (formData.get('read') === "96") {
+            formData.set('read_pr', "40");
+            formData.set('read_cat', "Average");
+        }
+        
+        // Condition for read = 97
+        if (formData.get('read') === "97") {
+            formData.set('read_pr', "42");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 98
+        if (formData.get('read') === "98") {
+            formData.set('read_pr', "45");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 99
+        if (formData.get('read') === "99") {
+            formData.set('read_pr', "47");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 100
+        if (formData.get('read') === "100") {
+            formData.set('read_pr', "50");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 101
+        if (formData.get('read') === "101") {
+            formData.set('read_pr', "53");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 102
+        if (formData.get('read') === "102") {
+            formData.set('read_pr', "55");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 103
+        if (formData.get('read') === "103") {
+            formData.set('read_pr', "58");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 104
+        if (formData.get('read') === "104") {
+            formData.set('read_pr', "61");
+            formData.set('read_cat', "Average");
+        }   
+
+        // Condition for read = 105
+        if (formData.get('read') === "105") {
+            formData.set('read_pr', "63");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 106
+        if (formData.get('read') === "106") {
+            formData.set('read_pr', "66");
+            formData.set('read_cat', "Average");
+        }
+        
+        // Condition for read = 107
+        if (formData.get('read') === "107") {
+            formData.set('read_pr', "68");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 108
+        if (formData.get('read') === "108") {
+            formData.set('read_pr', "70");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 109
+        if (formData.get('read') === "109") {
+            formData.set('read_pr', "73");
+            formData.set('read_cat', "Average");
+        }
+
+        // Condition for read = 110
+        if (formData.get('read') === "110") {
+            formData.set('read_pr', "75");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 111
+        if (formData.get('read') === "111") {
+            formData.set('read_pr', "77");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 112
+        if (formData.get('read') === "112") {
+            formData.set('read_pr', "79");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 113
+        if (formData.get('read') === "113") {
+            formData.set('read_pr', "81");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 114
+        if (formData.get('read') === "114") {
+            formData.set('read_pr', "82");
+            formData.set('read_cat', "High Average");
+        }   
+
+        // Condition for read = 115
+        if (formData.get('read') === "115") {
+            formData.set('read_pr', "84");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 116
+        if (formData.get('read') === "116") {
+            formData.set('read_pr', "86");
+            formData.set('read_cat', "High Average");
+        }
+        
+        // Condition for read = 117
+        if (formData.get('read') === "117") {
+            formData.set('read_pr', "87");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 118
+        if (formData.get('read') === "118") {
+            formData.set('read_pr', "88");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 119
+        if (formData.get('read') === "119") {
+            formData.set('read_pr', "90");
+            formData.set('read_cat', "High Average");
+        }
+
+        // Condition for read = 120
+        if (formData.get('read') === "120") {
+            formData.set('read_pr', "91");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 121
+        if (formData.get('read') === "121") {
+            formData.set('read_pr', "92");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 122
+        if (formData.get('read') === "122") {
+            formData.set('read_pr', "93");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 123
+        if (formData.get('read') === "123") {
+            formData.set('read_pr', "94");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 124
+        if (formData.get('read') === "124") {
+            formData.set('read_pr', "95");
+            formData.set('read_cat', "Very High");
+        }   
+
+        // Condition for read = 125
+        if (formData.get('read') === "125") {
+            formData.set('read_pr', "95");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 126
+        if (formData.get('read') === "126") {
+            formData.set('read_pr', "96");
+            formData.set('read_cat', "Very High");
+        }
+        
+        // Condition for read = 127
+        if (formData.get('read') === "127") {
+            formData.set('read_pr', "96");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 128
+        if (formData.get('read') === "128") {
+            formData.set('read_pr', "97");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 129
+        if (formData.get('read') === "129") {
+            formData.set('read_pr', "97");
+            formData.set('read_cat', "Very High");
+        }
+
+        // Condition for read = 130
+        if (formData.get('read') === "130") {
+            formData.set('read_pr', "98");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 131
+        if (formData.get('read') === "131") {
+            formData.set('read_pr', "98");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 132
+        if (formData.get('read') === "132") {
+            formData.set('read_pr', "98");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 133
+        if (formData.get('read') === "133") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 134
+        if (formData.get('read') === "134") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }   
+
+        // Condition for read = 135
+        if (formData.get('read') === "135") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 136
+        if (formData.get('read') === "136") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+        
+        // Condition for read = 137
+        if (formData.get('read') === "137") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 138
+        if (formData.get('read') === "138") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 139
+        if (formData.get('read') === "139") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+        // Condition for read = 140
+        if (formData.get('read') === "140") {
+            formData.set('read_pr', "99");
+            formData.set('read_cat', "Extremely High");
+        }
+
+    }
+
+    const fileInput = document.getElementById('templateFile');
+    if (!fileInput.files.length) {
+        alert('Please select a template file.');
+        return;
+    }
+
+    const templateFile = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const content = event.target.result;
+        generateDocument(formData, content);
+    };
+    reader.onerror = function(event) {
+        console.error('File reading error:', event.target.error);
+    };
+    reader.readAsArrayBuffer(templateFile);
+};
+
+function generateDocument(formData, templateContent) {
+    const zip = new PizZip(templateContent);
+    const doc = new window.docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+    });
+
+    const formDataObject = {};
+    formData.forEach((value, key) => {
+        formDataObject[key] = value;
+    });
+
+    doc.setData(formDataObject);
+
+    try {
+        doc.render();
+    } catch (error) {
+        const e = {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            properties: error.properties,
+        };
+
+        console.error(JSON.stringify({ error: e }));
+        throw error;
+    }
+
+    const out = doc.getZip().generate({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    });
+
+    saveAs(out, 'report.docx');
+}
+
+    </script>    
+</body>
+</html>
